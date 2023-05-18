@@ -1,6 +1,9 @@
 const express = require('express')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-require('dotenv').config()
+require('dotenv').config();
+
+// USER_NAME=toy-kingdom
+// USER_PASSWORD=Uaa4YKdfIIT7EYiC
 
 const cors = require('cors')
 const app = express()
