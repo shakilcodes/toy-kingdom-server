@@ -21,7 +21,6 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
 
     const carCollection = client.db('toy-kingdom').collection('collectedCar')
 
@@ -51,20 +50,19 @@ async function run() {
 
     app.put('/allToys/:id', async (req, res) => {
       const id = req.params.id;
+      console.log(id)
       const query = { _id: new ObjectId(id) };
       const options = { upsert: true};
       const updateToy = req.body;
       console.log(updateToy);
       const updated = {
           $set: {
-              
-              price: updateToy.price,
+            price: updateToy.price,
               quantity: updateToy.quantity,
               description: updateToy.description,
-
-          },
+          }
       };
-      const result = await carCollection.updateOne((query, updated, options))
+      const result = await carCollection.updateOne(query, updated, options)
       res.send(result);
   })
 
