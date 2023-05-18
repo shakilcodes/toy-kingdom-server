@@ -1,10 +1,6 @@
 const express = require('express')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
-
-// USER_NAME=toy-kingdom
-// USER_PASSWORD=Uaa4YKdfIIT7EYiC
-
 const cors = require('cors')
 const app = express()
 const port = process.env.PORT  || 5010;
@@ -22,7 +18,6 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
-
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -41,13 +36,7 @@ async function run() {
         const result = await carCollection.findOne(quary)
         res.send(result)
     })
-    // app.get("/allToys/:email", async(req, res) =>{
-    //     // const email = req.params.email
-    //     const quary = {email: new ObjectId(email)}
-    //     const result = await carCollection.find(quary)
-    //     res.send(result)
-    // })
-
+    
     app.get("/singleToys/:email", async (req, res) => {
       const toys = await carCollection.find({seller_email: req.params.email,}).toArray();
       res.send(toys);
