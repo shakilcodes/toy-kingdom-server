@@ -24,6 +24,14 @@ async function run() {
 
     const carCollection = client.db('toy-kingdom').collection('collectedCar')
 
+    const indexKeys = { toy_name: 1, sub_category: 1 }; // Replace field1 and field2 with your actual field names
+    const indexOptions = { name: "serachByTitle" }; // Replace index_name with the desired index name
+    const result = await carCollection.createIndex(indexKeys, indexOptions);
+    console.log(result);
+
+
+   
+
     app.get('/allToys', async(req, res) =>{
         const result = await carCollection.find().toArray();
         res.send(result)
@@ -47,6 +55,19 @@ async function run() {
       const result = await carCollection.insertOne(toys)
       res.send(result)
     })
+
+    app.get("/searchByTitle/:text", async (req, res) => {
+      const text = req.params.text;
+      const result = await carCollection
+        .find({
+          $or: [
+            { toy_name: { $regex: text, $options: "i" } },
+            { sub_category: { $regex: text, $options: "i" } },
+          ],
+        })
+        .toArray();
+      res.send(result);
+    });
 
     app.put('/allToys/:id', async (req, res) => {
       const id = req.params.id;
