@@ -3,7 +3,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const cors = require('cors')
 const app = express()
-const port = process.env.PORT  || 5010;
+const port = process.env.PORT || 5010;
 
 app.use(cors())
 app.use(express.json())
@@ -30,26 +30,37 @@ async function run() {
     console.log(result);
 
 
-   
 
-    app.get('/allToys', async(req, res) =>{
-        const result = await carCollection.find().toArray();
-        res.send(result)
-    })
 
-    app.get("/allToys/:id", async(req, res) =>{
-        const id = req.params.id
-        const quary = {_id: new ObjectId(id)}
-        const result = await carCollection.findOne(quary)
-        res.send(result)
+    app.get('/allToys', async (req, res) => {
+      const result = await carCollection.find().limit(20).toArray();
+      res.send(result)
     })
+    app.get('/allToysSort', async (req, res) => {
+      const result = await carCollection.aggregate([
+        { $addFields: { priceNumeric: { $toDouble: "$price" } } },
+        { $sort: { priceNumeric: 1 } },
+        { $limit: 20 }
+      ]).toArray();
     
-    app.get("/singleToys/:email", async (req, res) => {
-      const toys = await carCollection.find({seller_email: req.params.email,}).toArray();
-      res.send(toys);
+      res.send(result);
     });
     
-    app.post('/postToys', async(req, res)=>{
+
+
+    app.get("/allToys/:id", async (req, res) => {
+      const id = req.params.id
+      const quary = { _id: new ObjectId(id) }
+      const result = await carCollection.findOne(quary)
+      res.send(result)
+    })
+
+    app.get("/singleToys/:email", async (req, res) => {
+      const toys = await carCollection.find({ seller_email: req.params.email, }).toArray();
+      res.send(toys);
+    });
+
+    app.post('/postToys', async (req, res) => {
       const toys = req.body;
       console.log(toys)
       const result = await carCollection.insertOne(toys)
@@ -73,26 +84,26 @@ async function run() {
       const id = req.params.id;
       console.log(id)
       const query = { _id: new ObjectId(id) };
-      const options = { upsert: true};
+      const options = { upsert: true };
       const updateToy = req.body;
       console.log(updateToy);
       const updated = {
-          $set: {
-            price: updateToy.price,
-              quantity: updateToy.quantity,
-              description: updateToy.description,
-          }
+        $set: {
+          price: updateToy.price,
+          quantity: updateToy.quantity,
+          description: updateToy.description,
+        }
       };
       const result = await carCollection.updateOne(query, updated, options)
       res.send(result);
-  })
+    })
 
-    app.delete('/allToys/:id', async(req, res)=>{
+    app.delete('/allToys/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await carCollection.deleteOne(query)
       res.send(result)
-  })
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
