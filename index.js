@@ -10,7 +10,6 @@ app.use(express.json())
 
 const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.USER_PASSWORD}@cluster0.ybsvrsr.mongodb.net/?retryWrites=true&w=majority`;
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -20,12 +19,10 @@ const client = new MongoClient(uri, {
 });
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
-
     const carCollection = client.db('toy-kingdom').collection('collectedCar')
 
-    const indexKeys = { toy_name: 1, sub_category: 1 }; // Replace field1 and field2 with your actual field names
-    const indexOptions = { name: "serachByTitle" }; // Replace index_name with the desired index name
+    const indexKeys = { toy_name: 1, sub_category: 1 }; 
+    const indexOptions = { name: "serachByTitle" }; 
     const result = await carCollection.createIndex(indexKeys, indexOptions);
     console.log(result);
 
@@ -105,12 +102,9 @@ async function run() {
       res.send(result)
     })
 
-    // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
-    // Ensures that the client will close when you finish/error
-    // await client.close();
   }
 }
 run().catch(console.dir);
